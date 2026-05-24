@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Vibe Media Labs - Mobile Core 🤖👑</title>
+    <style>
+        :root {
+            --bg-main: #0a0a0d;
+            --bg-card: #12121a;
+            --bg-input: #1a1a26;
+            --primary: #3a86ff;
+            --accent: #ffb703;
+            --success: #38b000;
+            --error: #ff0055;
+            --text-muted: #62627a;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg-main); 
+            color: #fff; 
+            margin: 0; 
+            padding: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--bg-card); 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8); 
+            padding: 20px; 
+            border: 1px solid #1f1f2e;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        h2 { 
+            text-align: center; 
+            margin: 0 0 20px 0; 
+            color: #fff; 
+            font-size: 20px; 
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        h2 span {
+            background: linear-gradient(45deg, var(--primary), #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-label { 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            margin-bottom: 8px; 
+            letter-spacing: 1px; 
+        }
+
+        .mode-selector, .format-selector { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 18px; 
+        }
+        
+        .mode-btn, .format-btn { 
+            flex: 1; 
+            padding: 14px 10px; 
+            border: none; 
+            border-radius: 12px; 
+            background: var(--bg-input); 
+            color: #8f8fbc; 
+            font-weight: 700; 
+            font-size: 13px;
+            cursor: pointer; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #232336;
+        }
+
+        .mode-btn.active { 
+            background: linear-gradient(135deg, #2a6edb, var(--primary)); 
+            color: #fff; 
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(58,134,255,0.3); 
+        }
+
+        .format-btn.active { 
+            background: linear-gradient(135deg, #cc9202, var(--accent)); 
+            color: #000; 
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(255,183,3,0.3); 
+        }
+        
+        .input-group { 
+            display: flex; 
+            flex-direction: column;
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+
+        input { 
+            width: 100%;
+            padding: 16px; 
+            background: var(--bg-input); 
+            border: 1px solid #232336; 
+            border-radius: 12px; 
+            color: #fff; 
+            font-size: 14px; 
+            outline: none; 
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { 
+            border-color: var(--primary); 
+        }
+        
+        button.start-btn { 
+            width: 100%;
+            padding: 16px; 
+            background: linear-gradient(135deg, #2d8c00, var(--success)); 
+            border: none; 
+            border-radius: 12px; 
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(56,176,0,0.2);
+            transition: all 0.2s;
+        }
+
+        button.start-btn:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled { 
+            background: #2a2a35 !important; 
+            color: var(--text-muted) !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            cursor: not-allowed; 
+            opacity: 0.6; 
+        }
+        
+        .console-log { 
+            background: #050508; 
+            border-radius: 12px; 
+            padding: 12px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 12px; 
+            max-height: 180px; 
+            overflow-y: auto; 
+            border: 1px solid #1a1a26; 
+            margin-bottom: 18px; 
+        }
+
+        .log-entry { 
+            margin-bottom: 6px; 
+            line-height: 1.4; 
+        }
+        .log-entry.info { color: #00b4d8; }
+        .log-entry.success { color: #4eff4e; font-weight: bold; }
+        .log-entry.error { color: #ff4d6d; }
+        .log-entry.process { color: #ffca3a; }
+
+        .result-box { 
+            background: #152015; 
+            border-radius: 14px; 
+            padding: 15px; 
+            display: none; 
+            text-align: center; 
+            border: 1px solid rgba(56,176,0,0.4); 
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-box h4 { margin: 0 0 8px 0; color: #4eff4e; font-size: 15px; }
+        .download-status { font-size: 13px; color: #ccd; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🤖 <span>Vibe Media Core v2.0</span> 👑</h2>
+    
+    <div class="section-label">1. Платформа</div>
+    <div class="mode-selector">
+        <button class="mode-btn active" id="btnTikTok" onclick="setMode('tiktok')">🎵 TikTok Скан</button>
+        <button class="mode-btn" id="btnYouTube" onclick="setMode('youtube')">📹 YouTube Скан</button>
+    </div>
+
+    <div class="section-label">2. Формат медіа</div>
+    <div class="format-selector">
+        <button class="format-btn active" id="btnAudio" onclick="setFormat('mp3')">🔊 Повне Аудіо</button>
+        <button class="format-btn" id="btnVideo" onclick="setFormat('mp4')">🎬 Повне Відео</button>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="mediaUrl" placeholder="Встав посилання vt.tiktok.com...">
+        <button class="start-btn" id="actionBtn" onclick="startScan()">Витягнути медіа 🚀</button>
+    </div>
+
+    <div class="console-log" id="consoleBox">
+        <div class="log-entry info">[Система]: Мобільне ядро ініціалізовано. Очікування лінку.</div>
+    </div>
+
+    <div class="result-box" id="resultBox">
+        <h4>🎉 Успішно скомPrefixовано!</h4>
+        <div class="download-status" id="trackTitle">Назва: Завантаження...</div>
+        <div class="download-status" style="color: #4eff4e; font-weight: bold;" id="formatStatus">⚡ Збереження у пам'ять пристрою...</div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'tiktok';
+    let currentFormat = 'mp3';
+    const RAILWAY_SERVER = "https://yt-downloader-api-production-1da3.up.railway.app";
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('btnTikTok').classList.toggle('active', mode === 'tiktok');
+        document.getElementById('btnYouTube').classList.toggle('active', mode === 'youtube');
+        document.getElementById('mediaUrl').placeholder = mode === 'tiktok' ? "Встав посилання vt.tiktok.com..." : "Встав посилання youtu.be...";
+        log(`Цільовий шлюз змінено: ${mode.toUpperCase()}`, 'info');
+    }
+
+    function setFormat(format) {
+        currentFormat = format;
+        document.getElementById('btnAudio').classList.toggle('active', format === 'mp3');
+        document.getElementById('btnVideo').classList.toggle('active', format === 'mp4');
+        log(`Зміна специфікації: ${format === 'mp3' ? 'Екстракт повного аудіо' : 'Відео MP4'}`, 'info');
+    }
+
+    function log(text, type = 'process') {
+        const box = document.getElementById('consoleBox');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${text}`;
+        box.appendChild(entry);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // Оновлена функція завантаження, адаптована під Android WebView
+    function triggerAutoDownload(url, filename) {
+        // Якщо це локальний blob для аудіо, конвертуємо його в Base64 для стабільності в WebView
+        if(url.startsWith('blob:') && filename.endsWith('.mp3')) {
+            fetch(url).then(r => r.blob()).then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    const a = document.createElement('a');
+                    a.href = base64data;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+                reader.readAsDataURL(blob);
+            });
+            return;
+        }
+
+        // Для стандартних зовнішніх серверних лінків (відео або Railway)
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.download = filename; 
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    async function startScan() {
+        const urlInput = document.getElementById('mediaUrl');
+        const url = urlInput.value.trim();
+        const btn = document.getElementById('actionBtn');
+        const resBox = document.getElementById('resultBox');
+        
+        if (!url) {
+            log("Помилка: Пустий рядок введення!", "error");
+            return;
+        }
+
+        urlInput.disabled = true;
+        btn.disabled = true;
+        resBox.style.display = 'none';
+
+        if (currentMode === 'youtube') {
+            await scanYouTube(url);
+        } else {
+            await scanTikTok(url);
+        }
+
+        urlInput.disabled = false;
+        btn.disabled = false;
+    }
+
+    async function scanYouTube(targetUrl) {
+        log(`Зв'язок із Railway сервером [${currentFormat.toUpperCase()}]...`, 'process');
+        try {
+            const reqUrl = `${RAILWAY_SERVER}/download?url=${encodeURIComponent(targetUrl)}&format=${currentFormat}`;
+            const res = await fetch(reqUrl);
+            const data = await res.json();
+
+            if (data.success && data.progress_url) {
+                log(`✅ Задача додана в пул. Початок рендерингу...`, 'success');
+                pollYouTubeProgress(data.progress_url);
+            } else {
+                log(`❌ Помилка сервера: ${data.message}`, 'error');
+            }
+        } catch (err) {
+            log(`❌ Сервер Railway недоступний: ${err.message}`, 'error');
+        }
+    }
+
+    async function pollYouTubeProgress(progressUrl) {
+        try {
+            const res = await fetch(`${RAILWAY_SERVER}/progress?url=${encodeURIComponent(progressUrl)}`);
+            const data = await res.json();
+            if (data.success === 1 && data.progress === 1000 && data.download_url) {
+                log(`🎉 Медіа на сервері готове до віддачі!`, 'success');
+                document.getElementById('trackTitle').innerHTML = `<b>Джерело:</b> YouTube Cloud`;
+                document.getElementById('resultBox').style.display = 'block';
+                triggerAutoDownload(data.download_url, 'youtube_media.mp3');
+            } else {
+                log(`⏳ Збірка потоку: ${(data.progress / 10).toFixed(0)}%`, 'process');
+                setTimeout(() => pollYouTubeProgress(progressUrl), 1800);
+            }
+        } catch (e) {
+            setTimeout(() => pollYouTubeProgress(progressUrl), 2000);
+        }
+    }
+
+    async function scanTikTok(targetUrl) {
+        const apiBypassUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.tikwm.com/api/?url=${encodeURIComponent(targetUrl)}`)}`;
+        log(`🚀 Хакінг TikTok CDN. Шукаємо лінк на відео...`, 'process');
+
+        try {
+            const response = await fetch(apiBypassUrl);
+            const json = await response.json();
+            const innerData = JSON.parse(json.contents);
+
+            if (innerData && innerData.data) {
+                const videoUrl = innerData.data.play; 
+                let title = innerData.data.title || "TikTok_File";
+                title = title.replace(/[^\w\sа-яА-ЯіІєЄїЇґҐ]/gi, '').substring(0, 30); // Очистка назви для збереження
+                
+                log(`✅ Пряме відео-джерело знайдено!`, 'success');
+                
+                if (currentFormat === 'mp4') {
+                    log(`🎬 Скачування повного відеоролика...`, 'success');
+                    document.getElementById('trackTitle').innerHTML = `<b>Відео:</b> ${title}`;
+                    document.getElementById('formatStatus').innerHTML = `⚡ Зберігаю MP4 файл...`;
+                    document.getElementById('resultBox').style.display = 'block';
+                    triggerAutoDownload(videoUrl, `${title}.mp4`);
+                } else {
+                    log(`🎛️ Запуск внутрішнього декодера звуку...`, 'process');
+                    log(`⏳ Стрімінг аудіо-буфера в RAM пристрою...`, 'process');
+                    await extractAudioInBrowser(videoUrl, title);
+                }
+            } else {
+                log(`❌ Помилка API: невірний лінк або захист контенту.`, 'error');
+            }
+        } catch (err) {
+            log(`❌ Помилка шлюзу даних: ${err.message}`, 'error');
+        }
+    }
+
+    async function extractAudioInBrowser(videoUrl, title) {
+        try {
+            const response = await fetch(videoUrl);
+            const blob = await response.blob();
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            audio.crossOrigin = "anonymous";
+
+            const source = audioContext.createMediaElementSource(audio);
+            const destination = audioContext.createMediaStreamDestination();
+            source.connect(destination);
+
+            const mediaRecorder = new MediaRecorder(destination.stream);
+            const chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                log(`🎉 Звук успішно зрізано! КомPrefixую файл...`, 'success');
+                const audioBlob = new Blob(chunks, { type: 'audio/mp3' });
+                const fullAudioUrl = URL.createObjectURL(audioBlob);
+                
+                document.getElementById('trackTitle').innerHTML = `<b>Аудіо:</b> ${title}`;
+                document.getElementById('formatStatus').innerHTML = `⚡ Повний MP3 збережено!`;
+                document.getElementById('resultBox').style.display = 'block';
+                
+                triggerAutoDownload(fullAudioUrl, `${title}_full.mp3`);
+            };
+
+            audio.addEventListener('canplaythrough', () => {
+                log(`⚡ Запис запущено. Аналіз таймлайну: ${audio.duration.toFixed(0)} сек.`, 'process');
+                mediaRecorder.start();
+                audio.play();
+            });
+
+            audio.addEventListener('ended', () => {
+                mediaRecorder.stop();
+                audioContext.close();
+            });
+
+            audio.onerror = () => {
+                log(`❌ Помилка обробки медіа-буфера.`, 'error');
+            };
+
+        } catch (err) {
+            log(`❌ Екстрактор зупинено: ${err.message}`, 'error');
+        }
+    }
+</script>
+
+</body>
+</html>
